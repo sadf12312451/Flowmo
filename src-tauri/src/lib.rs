@@ -4,9 +4,28 @@ use tauri::{
     Manager,
 };
 
+#[tauri::command]
+async fn apply_blur_effect(app: tauri::AppHandle, label: String) -> Result<(), String> {
+    let window = app
+        .get_webview_window(&label)
+        .ok_or("window not found")?;
+
+    // 使用 window-vibrancy 直接调用 Win32 API，失焦不会消失
+    // 聚焦时显示毛玻璃，失焦自动降级为半透明
+    #[cfg(target_os = "windows")]
+    {
+        use window_vibrancy::apply_acrylic;
+        let _ = apply_acrylic(&window, Some((255, 255, 255, 40)));
+    }
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_sql::Builder::default().build())
+        .invoke_handler(tauri::generate_handler![apply_blur_effect])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

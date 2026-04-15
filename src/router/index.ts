@@ -57,6 +57,11 @@ const router = createRouter({
       name: 'Settings',
       component: () => import('../views/Settings/index.vue'),
     },
+    {
+      path: '/sticky-float',
+      name: 'StickyFloat',
+      component: () => import('../views/StickyNote/FloatWindow.vue'),
+    },
   ],
 })
 
