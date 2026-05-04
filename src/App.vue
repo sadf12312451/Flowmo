@@ -19,6 +19,7 @@
               </main>
             </div>
           </div>
+          <SearchPanel />
         </n-message-provider>
         </n-dialog-provider>
       </n-notification-provider>
@@ -27,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
@@ -44,18 +45,34 @@ import {
 } from 'naive-ui'
 import Sidebar from './components/layout/Sidebar.vue'
 import Titlebar from './components/layout/Titlebar.vue'
+import SearchPanel from './components/common/SearchPanel.vue'
 import { useSettingsStore } from './stores/settings'
+import { useSearchStore } from './stores/search'
 
 const route = useRoute()
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
+const searchStore = useSearchStore()
 
 const isFloatWindow = computed(() => route.path.startsWith('/sticky-float'))
 const naiveLocale = computed(() => (settingsStore.locale === 'zh-CN' ? zhCN : enUS))
 const naiveDateLocale = computed(() => (settingsStore.locale === 'zh-CN' ? dateZhCN : dateEnUS))
 
+function handleGlobalShortcut(e: KeyboardEvent) {
+  // Ctrl+K / Cmd+K 打开搜索
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault()
+    searchStore.showSearchPanel = true
+  }
+}
+
 onMounted(() => {
   settingsStore.init()
+  window.addEventListener('keydown', handleGlobalShortcut)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleGlobalShortcut)
 })
 </script>
 

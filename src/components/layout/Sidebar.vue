@@ -9,6 +9,17 @@
       </n-button>
     </div>
 
+    <div v-if="!settingsStore.sidebarCollapsed" class="sidebar-search" @click="searchStore.showSearchPanel = true">
+      <n-icon :component="SearchOutline" :size="14" />
+      <span class="search-text">搜索...</span>
+      <kbd class="search-kbd">Ctrl+K</kbd>
+    </div>
+    <div v-else class="sidebar-search-icon" @click="searchStore.showSearchPanel = true">
+      <n-button quaternary circle size="small">
+        <template #icon><n-icon :component="SearchOutline" /></template>
+      </n-button>
+    </div>
+
     <n-menu
       :value="currentRoute"
       :collapsed="settingsStore.sidebarCollapsed"
@@ -49,13 +60,16 @@ import {
   CloseOutline,
   SunnyOutline,
   MoonOutline,
+  SearchOutline,
 } from '@vicons/ionicons5'
 import { useSettingsStore } from '../../stores/settings'
+import { useSearchStore } from '../../stores/search'
 
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
+const searchStore = useSearchStore()
 
 const currentRoute = computed(() => route.name as string)
 
@@ -116,5 +130,43 @@ function handleMenuUpdate(key: string) {
   padding: 12px 16px;
   display: flex;
   justify-content: center;
+}
+
+.sidebar-search {
+  margin: 0 12px 8px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  background: rgba(128, 128, 128, 0.08);
+  cursor: pointer;
+  font-size: 12px;
+  color: rgba(128, 128, 128, 1);
+  transition: background 0.15s;
+}
+
+.sidebar-search:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.search-text {
+  flex: 1;
+  opacity: 0.7;
+}
+
+.search-kbd {
+  font-size: 10px;
+  font-family: monospace;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(128, 128, 128, 0.15);
+  opacity: 0.7;
+}
+
+.sidebar-search-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
 }
 </style>
