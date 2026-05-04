@@ -20,14 +20,20 @@
       </n-button>
     </div>
 
-    <n-menu
-      :value="currentRoute"
-      :collapsed="settingsStore.sidebarCollapsed"
-      :collapsed-width="64"
-      :collapsed-icon-size="22"
-      :options="menuOptions"
-      @update:value="handleMenuUpdate"
-    />
+    <div class="custom-menu">
+      <div
+        v-for="item in menuItems"
+        :key="item.key"
+        class="menu-item"
+        :class="{ active: currentRoute === item.key, divider: item.divider }"
+        @click="!item.divider && handleMenuUpdate(item.key)"
+      >
+        <template v-if="!item.divider">
+          <n-icon :component="item.icon" :size="settingsStore.sidebarCollapsed ? 22 : 18" />
+          <span v-if="!settingsStore.sidebarCollapsed" class="menu-label">{{ item.label }}</span>
+        </template>
+      </div>
+    </div>
 
     <div class="sidebar-footer">
       <n-button quaternary circle size="small" @click="settingsStore.toggleDark">
@@ -40,11 +46,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, type Component } from 'vue'
+import { computed, type Component } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { NMenu, NButton, NIcon } from 'naive-ui'
-import type { MenuOption } from 'naive-ui'
+import { NButton, NIcon } from 'naive-ui'
 import {
   DocumentTextOutline,
   BookOutline,
@@ -73,26 +78,34 @@ const searchStore = useSearchStore()
 
 const currentRoute = computed(() => route.name as string)
 
-function renderIcon(icon: Component) {
-  return () => h(NIcon, null, { default: () => h(icon) })
+interface MenuItem {
+  key: string
+  label?: string
+  icon?: Component
+  divider?: boolean
 }
 
-const menuOptions = computed<MenuOption[]>(() => [
-  { label: t('nav.stickyNote'), key: 'StickyNote', icon: renderIcon(DocumentTextOutline) },
-  { label: t('nav.notepad'), key: 'Notepad', icon: renderIcon(BookOutline) },
-  { label: t('nav.todo'), key: 'Todo', icon: renderIcon(CheckboxOutline) },
-  { label: t('nav.countdown'), key: 'Countdown', icon: renderIcon(TimerOutline) },
-  { label: t('nav.pomodoro'), key: 'Pomodoro', icon: renderIcon(HourglassOutline) },
-  { label: t('nav.calendar'), key: 'Calendar', icon: renderIcon(CalendarOutline) },
-  { label: t('nav.habitTracker'), key: 'HabitTracker', icon: renderIcon(FitnessOutline) },
-  { type: 'divider' },
-  { label: t('nav.stats'), key: 'Stats', icon: renderIcon(StatsChartOutline) },
-  { label: t('nav.trash'), key: 'Trash', icon: renderIcon(TrashOutline) },
-  { label: t('nav.settings'), key: 'Settings', icon: renderIcon(SettingsOutline) },
+const menuItems = computed<MenuItem[]>(() => [
+  { key: 'StickyNote', label: t('nav.stickyNote'), icon: DocumentTextOutline },
+  { key: 'Notepad', label: t('nav.notepad'), icon: BookOutline },
+  { key: 'Todo', label: t('nav.todo'), icon: CheckboxOutline },
+  { key: 'Countdown', label: t('nav.countdown'), icon: TimerOutline },
+  { key: 'Pomodoro', label: t('nav.pomodoro'), icon: HourglassOutline },
+  { key: 'Calendar', label: t('nav.calendar'), icon: CalendarOutline },
+  { key: 'HabitTracker', label: t('nav.habitTracker'), icon: FitnessOutline },
+  { key: 'div-1', divider: true },
+  { key: 'Stats', label: t('nav.stats'), icon: StatsChartOutline },
+  { key: 'Trash', label: t('nav.trash'), icon: TrashOutline },
+  { key: 'Settings', label: t('nav.settings'), icon: SettingsOutline },
 ])
 
 function handleMenuUpdate(key: string) {
-  router.push({ name: key })
+  console.log('[Sidebar] menu clicked:', key)
+  router.push({ name: key }).then(() => {
+    console.log('[Sidebar] navigated to', key)
+  }).catch(err => {
+    console.error('[Sidebar] Failed to navigate to', key, err)
+  })
 }
 </script>
 
@@ -168,5 +181,58 @@ function handleMenuUpdate(key: string) {
   display: flex;
   justify-content: center;
   margin-bottom: 4px;
+}
+
+.custom-menu {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 8px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  margin-bottom: 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(120, 120, 120, 1);
+  transition: background 0.12s, color 0.12s;
+  user-select: none;
+}
+
+.menu-item:hover {
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.menu-item.active {
+  background: rgba(64, 152, 252, 0.1);
+  color: #4098fc;
+  font-weight: 500;
+}
+
+.menu-item.divider {
+  height: 1px;
+  background: rgba(128, 128, 128, 0.15);
+  margin: 8px 12px;
+  padding: 0;
+  cursor: default;
+}
+
+.menu-item.divider:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.menu-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 9px 0;
 }
 </style>

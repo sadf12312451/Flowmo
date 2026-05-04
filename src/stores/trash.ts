@@ -17,26 +17,26 @@ export const useTrashStore = defineStore('trash', () => {
 
   async function loadTrash() {
     loading.value = true
+    try {
+      const stickies = await query<{ id: number; title: string; content: string; color: string; deleted_at: string }>(
+        "SELECT id, title, content, color, deleted_at FROM sticky_notes WHERE deleted = 1 ORDER BY deleted_at DESC"
+      )
 
-    const stickies = await query<{ id: number; title: string; content: string; color: string; deleted_at: string }>(
-      "SELECT id, title, content, color, deleted_at FROM sticky_notes WHERE deleted = 1 ORDER BY deleted_at DESC"
-    )
+      const notepads = await query<{ id: number; title: string; content: string; deleted_at: string }>(
+        "SELECT id, title, content, deleted_at FROM notepad WHERE deleted = 1 ORDER BY deleted_at DESC"
+      )
 
-    const notepads = await query<{ id: number; title: string; content: string; deleted_at: string }>(
-      "SELECT id, title, content, deleted_at FROM notepad WHERE deleted = 1 ORDER BY deleted_at DESC"
-    )
+      const todos = await query<{ id: number; title: string; description: string; deleted_at: string }>(
+        "SELECT id, title, description, deleted_at FROM todos WHERE deleted = 1 AND parent_id IS NULL ORDER BY deleted_at DESC"
+      )
 
-    const todos = await query<{ id: number; title: string; description: string; deleted_at: string }>(
-      "SELECT id, title, description, deleted_at FROM todos WHERE deleted = 1 AND parent_id IS NULL ORDER BY deleted_at DESC"
-    )
+      const countdowns = await query<{ id: number; title: string; description: string; color: string; deleted_at: string }>(
+        "SELECT id, title, description, color, deleted_at FROM countdowns WHERE deleted = 1 ORDER BY deleted_at DESC"
+      )
 
-    const countdowns = await query<{ id: number; title: string; description: string; color: string; deleted_at: string }>(
-      "SELECT id, title, description, color, deleted_at FROM countdowns WHERE deleted = 1 ORDER BY deleted_at DESC"
-    )
-
-    items.value = [
-      ...stickies.map(s => ({
-        id: s.id,
+      items.value = [
+        ...stickies.map(s => ({
+          id: s.id,
         type: 'sticky' as const,
         title: s.title || '无标题便签',
         preview: stripHtml(s.content).slice(0, 80),
@@ -66,8 +66,12 @@ export const useTrashStore = defineStore('trash', () => {
         color: c.color,
       })),
     ].sort((a, b) => (b.deleted_at || '').localeCompare(a.deleted_at || ''))
-
-    loading.value = false
+    } catch (err) {
+      console.error('[Trash] loadTrash failed:', err)
+      items.value = []
+    } finally {
+      loading.value = false
+    }
   }
 
   async function restore(item: TrashItem) {
