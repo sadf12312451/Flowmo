@@ -24,6 +24,65 @@
     </div>
 
     <div class="settings-section">
+      <div class="section-title">AI 助手</div>
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-name">服务提供商</div>
+          <div class="setting-desc">选择 AI 服务</div>
+        </div>
+        <n-select
+          v-model:value="aiStore.config.provider"
+          :options="providerOptions"
+          style="width: 160px"
+          @update:value="aiStore.saveConfig"
+        />
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-name">API 密钥</div>
+          <div class="setting-desc">用于访问 AI 服务</div>
+        </div>
+        <n-input
+          v-model:value="aiStore.config.apiKey"
+          type="password"
+          placeholder="sk-..."
+          style="width: 280px"
+          @blur="aiStore.saveConfig"
+        />
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-name">模型</div>
+          <div class="setting-desc">{{ aiStore.getModelDisplayName(aiStore.config.model) }}</div>
+        </div>
+        <n-input
+          v-model:value="aiStore.config.model"
+          placeholder="gpt-3.5-turbo"
+          style="width: 200px"
+          @blur="aiStore.saveConfig"
+        />
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-name">自定义地址（可选）</div>
+          <div class="setting-desc">留空使用默认地址</div>
+        </div>
+        <n-input
+          v-model:value="aiStore.config.baseURL"
+          placeholder="https://api.openai.com/v1"
+          style="width: 280px"
+          @blur="aiStore.saveConfig"
+        />
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-name">状态</div>
+          <div class="setting-desc">{{ aiStore.isConfigured() ? '已配置 ✓' : '未配置' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="section-title">关于</div>
       <div class="setting-item">
         <div class="setting-label">
@@ -42,12 +101,23 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NSwitch, NRadioGroup, NRadio } from 'naive-ui'
+import { NSwitch, NRadioGroup, NRadio, NSelect, NInput } from 'naive-ui'
 import { useSettingsStore } from '../../stores/settings'
+import { useAIStore } from '../../services/ai'
 
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
+const aiStore = useAIStore()
+
+const providerOptions = computed(() => [
+  { label: 'OpenAI', value: 'openai' },
+  { label: 'Claude', value: 'claude' },
+  { label: '本地模型 (Ollama)', value: 'ollama' },
+  { label: '智谱 AI', value: 'zhipu' },
+  { label: 'DeepSeek', value: 'deepseek' },
+])
 </script>
 
 <style scoped>

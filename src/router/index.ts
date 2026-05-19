@@ -5,7 +5,12 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/sticky-note',
+      redirect: '/chat',
+    },
+    {
+      path: '/chat',
+      name: 'Chat',
+      component: () => import('../views/Chat/index.vue'),
     },
     {
       path: '/sticky-note',

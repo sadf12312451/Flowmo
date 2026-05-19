@@ -51,6 +51,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
 import {
+  ChatbubbleEllipsesOutline,
   DocumentTextOutline,
   BookOutline,
   CheckboxOutline,
@@ -86,6 +87,8 @@ interface MenuItem {
 }
 
 const menuItems = computed<MenuItem[]>(() => [
+  { key: 'Chat', label: 'AI 助手', icon: ChatbubbleEllipsesOutline },
+  { key: 'div-0', divider: true },
   { key: 'StickyNote', label: t('nav.stickyNote'), icon: DocumentTextOutline },
   { key: 'Notepad', label: t('nav.notepad'), icon: BookOutline },
   { key: 'Todo', label: t('nav.todo'), icon: CheckboxOutline },
