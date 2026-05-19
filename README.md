@@ -1,5 +1,138 @@
-# Vue 3 + TypeScript + Vite
+# 浮墨 Flowmo
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+> **桌面上的生活管家** — 给普通人用的 AI 个人助理
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+一个让 AI 真正"动手"帮你管理生活的桌面应用。不写代码、不做研究、不当客服 —— 只帮你把生活里那些零碎的事处理好：记便签、设提醒、列待办、打卡习惯。
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Tauri](https://img.shields.io/badge/Tauri-2-orange.svg)](https://tauri.app)
+[![Vue](https://img.shields.io/badge/Vue-3-brightgreen.svg)](https://vuejs.org)
+
+---
+
+## ✨ 它和别的 AI 应用有什么不同？
+
+| 你听过的 AI 工具 | 它们的定位 | 浮墨不一样的地方 |
+|---|---|---|
+| Cursor / Codex | 程序员的 AI 助手 | 浮墨**不写代码** |
+| Claude Desktop | 知识工作者的 AI 助手 | 浮墨**不做通用研究/聊天** |
+| ChatGPT Desktop | 通用聊天客户端 | 浮墨**不是万能对话框** |
+| 浮墨 | **普通人的生活管家** | 专做**生活管理**这一件事 |
+
+**核心差异**：
+
+- 🧠 **AI 真正动手做事**：你说"明天 8 点提醒我吃药"，浮墨直接帮你创建提醒。不只是回答你"好的我记下了"。
+- 💾 **数据在你电脑上**：所有便签、待办、对话记录保存在本地 SQLite，不上云、不上传。
+- 🏠 **桌面级深度整合**：悬浮便签贴在桌面、全局快捷键随时唤起、系统托盘常驻。
+- 🎯 **垂直场景做透**：番茄钟、习惯打卡、倒计时这些 — 通用 AI 助手做不到的深度。
+- 🔌 **多 AI 服务可切换**：一个应用里用 Claude / GPT / Ollama / 智谱 / DeepSeek，普通用户感知不到模型切换的复杂性。
+
+## 🎬 典型场景
+
+**别的 AI 应用上**：
+```
+你：明天提醒我交报告
+AI：好的我记下了。
+（然而它什么都没做，明天什么提醒都没有）
+```
+
+**浮墨上**：
+```
+你：明天提醒我交报告
+浮墨：[创建倒计时: 交报告 - 明天 9:00, 弹窗+声音]
+     已经帮你设好提醒 ✓ 默认 9:00，要改吗？
+你：早一点 8:30 吧
+浮墨：[更新: 8:30]
+     好的 8:30 ✓
+（明天 8:30，桌面真的弹出提醒）
+```
+
+## 🚀 已实现的功能
+
+### 核心模块
+
+- 📝 **便签** — 多个独立浮窗悬浮在桌面，颜色分类、置顶、Acrylic 毛玻璃
+- 📖 **记事本** — Tiptap 富文本编辑器，支持粘贴截图、自动保存
+- ✓ **待办** — 两层子任务、优先级（紧急/重要/一般）、周期任务（每天/每周/每月）
+- ⏰ **倒计时** — 实时倒计时显示、颜色标记、到期弹窗+声音、提前提醒
+- 🍅 **番茄钟** — 25+5 循环、长休息、圆形进度、专注备注、历史记录
+- 💪 **习惯打卡** — 自定义图标颜色、连续天数、90 天热力图
+- 📅 **日历视图** — 月视图聚合倒计时/待办/打卡、点击日期查看详情
+- 🗑️ **回收站** — 跨模块聚合已删除项、恢复、永久删除、清空
+- 🔍 **全局搜索** — `Ctrl+K` 唤起、跨 5 个模块、关键词高亮
+
+### 即将到来（第四阶段：AI 生活管家）
+
+- 🤖 **AI 主对话界面** — 用聊天方式管理你的所有事项
+- 🛠️ **AI 工具调用** — AI 能直接创建/修改你的便签、待办、提醒
+- 🌅 **早晚问候** — 早上主动汇报今日安排，晚上回顾完成情况
+- 🎯 **意图识别** — "明天 8 点提醒我吃药" 自动识别并创建提醒
+- 📋 **生活场景模板** — 一键早安总结、睡前回顾、整理便签
+- ⚡ **全局唤起** — 系统级快捷键随时召唤
+- 📋 **智能剪贴板** — 复制内容自动判断该记成什么
+- 🧠 **AI 轻记忆** — 记住你的偏好和习惯
+
+## 🛠️ 技术栈
+
+| 层级 | 选型 |
+|---|---|
+| 桌面框架 | Tauri 2 |
+| 前端框架 | Vue 3 + TypeScript |
+| 构建工具 | Vite |
+| UI 组件库 | Naive UI |
+| 状态管理 | Pinia |
+| 本地数据库 | SQLite (tauri-plugin-sql) |
+| 富文本 | Tiptap |
+| AI 接口 | 自研适配层（兼容 OpenAI 协议） |
+
+## 📦 安装
+
+### 用户安装
+
+> 打包发布版即将到来。在此之前可以通过源码运行。
+
+### 开发者运行
+
+**前置要求**：
+- Node.js 20+
+- pnpm 10+
+- Rust 1.77+
+- Windows: Visual Studio Build Tools (含 C++ 桌面开发工作负载)
+- macOS / Linux: 标准开发工具
+
+**步骤**：
+
+```bash
+git clone https://github.com/sadf12312451/Flowmo.git
+cd Flowmo
+pnpm install
+pnpm tauri dev
+```
+
+**Windows 用户**：直接双击 `dev.bat`，会自动配置 MSVC 环境并启动。
+
+## 💡 设计理念
+
+**写每一行代码前问自己一句：**
+
+> **"你身边那个最不擅长电脑的人，能直接上手用吗？"**
+
+| 决策 | 普通人视角 |
+|---|---|
+| 默认隐藏 API/Token 配置 | "API" 会让他害怕 |
+| 模型名改成"快速"/"聪明" | 他不知道 GPT-4o 是什么 |
+| 所有操作要"看得见的反馈" | 他需要看到事情真的被记下了 |
+| 错误说"网络问题"而非"401" | 他不懂 HTTP 状态码 |
+| AI 主动识别意图，不需要"指挥" | 他不会写提示词 |
+
+## 📋 开发计划
+
+详见 [DEVPLAN.md](./DEVPLAN.md)。
+
+## 🤝 贡献
+
+欢迎 Issue 和 PR。
+
+## 📄 协议
+
+[MIT License](LICENSE)
